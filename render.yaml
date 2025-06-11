@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: nirvan-app
+    env: python
+    buildCommand: |
+      apt-get update
+      apt-get install -y portaudio19-dev python3-pyaudio
+      pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nirvana Public Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8fafc; }
+        .stat-card { border-radius: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+        .progress { height: 1.5rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Nirvana Public Dashboard</a>
+        </div>
+    </nav>
+    <div class="container">
+        <h2 class="mb-4">Transparency & Problem Solving Stats</h2>
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card stat-card p-3">
+                    <h5>Total Complaints</h5>
+                    <h2 id="total-complaints">0</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card p-3">
+                    <h5>Resolved</h5>
+                    <h2 id="resolved-complaints">0</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card p-3">
+                    <h5>In Progress</h5>
+                    <h2 id="inprogress-complaints">0</h2>
+                </div>
+            </div>
+        </div>
+        <h4 class="mb-3">Recent Complaints</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Summary</th>
+                    </tr>
+                </thead>
+                <tbody id="public-table">
+                    <!-- Data will be loaded here by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+    // Example: Fetch stats and complaints from backend (replace URL as needed)
+    fetch('/api/public/stats')
+      .then(res => res.json())
+      .then(stats => {
+        document.getElementById('total-complaints').textContent = stats.total;
+        document.getElementById('resolved-complaints').textContent = stats.resolved;
+        document.getElementById('inprogress-complaints').textContent = stats.inprogress;
+      });
+    fetch('/api/public/complaints')
+      .then(res => res.json())
+      .then(data => {
+        const table = document.getElementById('public-table');
+        table.innerHTML = data.map(c => `
+          <tr>
+            <td>${c.id.slice(0,8)}</td>
+            <td>${c.category}</td>
+            <td><span class="badge bg-${c.status==='Resolved'?'success':c.status==='In Progress'?'warning':'secondary'}">${c.status}</span></td>
+            <td>${c.date}</td>
+            <td>${c.title}</td>
+          </tr>
+        `).join('');
+      });
+    </script>
+</body>
+</html>

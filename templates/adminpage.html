@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - All Complaints</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body { background: #f8fafc; }
+    .table thead { background: #0d6efd; color: #fff; }
+    .status-badge { font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Nirvana Admin</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>All Complaints</h2>
+      <a href="/admin/analytics" class="btn btn-outline-success">📊 View Analytics</a>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <select id="filter-status" class="form-select">
+          <option value="">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select id="filter-priority" class="form-select">
+          <option value="">All Priorities</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Phone</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="complaints-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="updateModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="updateForm" enctype="multipart/form-data">
+          <div class="modal-header">
+            <h5 class="modal-title">Update Complaint</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="complaintId" name="id"/>
+            <div class="mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select class="form-select" id="status" name="status">
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Resolved</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="comment" class="form-label">Comment</label>
+              <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="evidence" class="form-label">Upload Resolution Evidence</label>
+              <input type="file" class="form-control" id="evidence" name="evidence"/>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Submit Update</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const table = document.getElementById('complaints-table');
+    const statusFilter = document.getElementById('filter-status');
+    const priorityFilter = document.getElementById('filter-priority');
+    const modal = new bootstrap.Modal(document.getElementById('updateModal'));
+
+    statusFilter.addEventListener('change', loadData);
+    priorityFilter.addEventListener('change', loadData);
+
+    function loadData() {
+      fetch('/api/admin/complaints')
+        .then(res => res.json())
+        .then(data => {
+          const filtered = data.filter(c =>
+            (!statusFilter.value || c.status === statusFilter.value) &&
+            (!priorityFilter.value || c.priority === priorityFilter.value)
+          );
+          table.innerHTML = filtered.map(c => `
+            <tr>
+              <td>${c.id.slice(0,8)}</td>
+              <td>${c.phone}</td>
+              <td>${c.title}</td>
+              <td>${c.category}</td>
+              <td><span class="badge bg-${c.status==='Resolved'?'success':c.status==='In Progress'?'warning':'secondary'} status-badge">${c.status}</span></td>
+              <td><span class="badge bg-${c.priority==='High'?'danger':c.priority==='Medium'?'warning':'secondary'}">${c.priority}</span></td>
+              <td>${c.date}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary" onclick='openModal(${JSON.stringify(c)})'>Update</button>
+              </td>
+            </tr>
+          `).join('');
+        });
+    }
+
+    function openModal(complaint) {
+      document.getElementById('complaintId').value = complaint.id;
+      document.getElementById('status').value = complaint.status;
+      document.getElementById('comment').value = "";
+      document.getElementById('evidence').value = "";
+      modal.show();
+    }
+
+    document.getElementById('updateForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+
+      fetch('/api/admin/update-complaint', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(resp => {
+        if (resp.success) {
+          modal.hide();
+          loadData();
+        } else {
+          alert("Update failed!");
+        }
+      });
+    });
+
+    loadData();
+  </script>
+</body>
+</html>

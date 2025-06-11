@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Push Update to User</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8fafc; }
+        .card { max-width: 500px; margin: 40px auto; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-radius: 1rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-info mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Push Update to User</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="card p-4">
+            <h4 class="mb-3">Send Update Regarding Complaint</h4>
+            <form id="pushForm">
+                <div class="mb-3">
+                    <label for="phone" class="form-label">User Phone Number</label>
+                    <input type="text" class="form-control" id="phone" required placeholder="Enter phone number">
+                </div>
+                <div class="mb-3">
+                    <label for="complaintId" class="form-label">Complaint ID</label>
+                    <input type="text" class="form-control" id="complaintId" required placeholder="Enter complaint ID">
+                </div>
+                <div class="mb-3">
+                    <label for="updateMsg" class="form-label">Update Message</label>
+                    <textarea class="form-control" id="updateMsg" rows="3" required placeholder="Type your update..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-info w-100">Send Update</button>
+            </form>
+            <div id="resultMsg" class="mt-3"></div>
+        </div>
+    </div>
+    <script>
+    document.getElementById('pushForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const phone = document.getElementById('phone').value.trim();
+        const complaintId = document.getElementById('complaintId').value.trim();
+        const updateMsg = document.getElementById('updateMsg').value.trim();
+        const resultMsg = document.getElementById('resultMsg');
+        resultMsg.textContent = 'Sending...';
+        try {
+            const res = await fetch('/api/admin/push_update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, complaint_id: complaintId, message: updateMsg })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                resultMsg.innerHTML = '<span class="text-success">Update sent successfully!</span>';
+            } else {
+                resultMsg.innerHTML = '<span class="text-danger">' + (data.error || 'Failed to send update') + '</span>';
+            }
+        } catch (err) {
+            resultMsg.innerHTML = '<span class="text-danger">Network error</span>';
+        }
+    });
+    </script>
+</body>
+</html>

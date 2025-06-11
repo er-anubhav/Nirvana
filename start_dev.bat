@@ -1,0 +1,3 @@
+@echo off
+echo Starting Nirvana development server with auto-reload...
+python run_dev.py

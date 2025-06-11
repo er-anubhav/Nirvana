@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nirvana - Citizen Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Merriweather', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.5s ease-out;
+    }
+    .modal {
+      transition: opacity 0.25s ease;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-white min-h-screen text-gray-800">
+  <header class="text-center py-10 bg-blue-600 text-white shadow">
+    <h1 class="text-4xl font-bold">Nirvana</h1>
+    <p class="text-lg mt-2 italic">Citizen Complaint Portal - Track Your Complaints</p>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    <!-- Search Form -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-10">
+      <form id="searchForm" class="space-y-4">
+        <label class="block text-lg font-semibold">Enter Phone Number</label>
+        <input id="phoneNumber" type="tel" required placeholder="e.g. +919876543210" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">Search Complaints</button>
+      </form>
+      <div id="messageArea" class="mt-4"></div>
+    </section>
+
+    <!-- Stats -->
+    <section id="complaintsContainer" class="hidden">
+      <div id="statsCards" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-lg shadow text-center">
+          <h3 class="text-sm text-gray-500">Total Complaints</h3>
+          <p id="totalComplaints" class="text-2xl font-bold text-blue-600">0</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow text-center">
+          <h3 class="text-sm text-gray-500">Resolved</h3>
+          <p id="resolvedComplaints" class="text-2xl font-bold text-green-600">0</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow text-center">
+          <h3 class="text-sm text-gray-500">Pending</h3>
+          <p id="pendingComplaints" class="text-2xl font-bold text-yellow-600">0</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow text-center">
+          <h3 class="text-sm text-gray-500">Avg. Resolution (days)</h3>
+          <p id="avgResolutionTime" class="text-2xl font-bold text-purple-600">0</p>
+        </div>
+      </div>
+
+      <div id="complaintsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('searchForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const phoneNumber = document.getElementById('phoneNumber').value.trim();
+      const messageArea = document.getElementById('messageArea');
+      const complaintsContainer = document.getElementById('complaintsContainer');
+      const complaintsGrid = document.getElementById('complaintsGrid');
+      const statsCards = document.getElementById('statsCards');
+
+      if (!phoneNumber) {
+        showMessage('Please enter your phone number', 'error');
+        return;
+      }
+
+      messageArea.innerHTML = `
+        <div class="flex items-center gap-4 py-4 animate-pulse text-blue-600">
+          <svg class="w-6 h-6 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+          <p class="font-medium">Searching complaints...</p>
+        </div>`;
+
+      try {
+        const response = await fetch('/api/citizen/complaints', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone_number: phoneNumber })
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+        const data = await response.json();
+        if (data.complaints && data.complaints.length > 0) {
+          displayComplaints(data.complaints, data.stats);
+          messageArea.innerHTML = '';
+          complaintsContainer.style.display = 'block';
+        } else {
+          showMessage('No complaints found for this phone number', 'info');
+          complaintsContainer.style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showMessage(`Network error: ${error.message}`, 'error');
+        complaintsContainer.style.display = 'none';
+      }
+    });
+
+    function showMessage(message, type) {
+      const classMap = {
+        error: 'bg-red-100 border-l-4 border-red-500 text-red-700',
+        success: 'bg-green-100 border-l-4 border-green-500 text-green-700',
+        info: 'bg-blue-100 border-l-4 border-blue-500 text-blue-700'
+      };
+
+      document.getElementById('messageArea').innerHTML = `
+        <div class="p-4 rounded-md shadow ${classMap[type]} mb-4 animate-fade-in">
+          <div class="flex items-center space-x-2">
+            <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+          </div>
+        </div>`;
+    }
+
+    function displayComplaints(complaints, stats) {
+      const complaintsGrid = document.getElementById('complaintsGrid');
+      const statsCards = document.getElementById('statsCards');
+
+      if (stats) {
+        document.getElementById('totalComplaints').textContent = stats.total || 0;
+        document.getElementById('resolvedComplaints').textContent = stats.resolved || 0;
+        document.getElementById('pendingComplaints').textContent = stats.pending || 0;
+        document.getElementById('avgResolutionTime').textContent = stats.avg_resolution_days || 0;
+        statsCards.style.display = 'grid';
+      }
+
+      complaintsGrid.innerHTML = complaints.map(c => {
+        const priority = c.priority_score > 0.7 ? 'High' : c.priority_score > 0.4 ? 'Medium' : 'Low';
+        const bgColor = priority === 'High' ? 'bg-red-100' : priority === 'Medium' ? 'bg-yellow-100' : 'bg-green-100';
+        const createdDate = new Date(c.created_at).toLocaleDateString();
+
+        return `
+          <div class="p-5 rounded-lg shadow bg-white border-l-4 ${bgColor} animate-fade-in">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-mono text-gray-500">ID: ${c.id.substring(0,8)}</span>
+              <span class="px-2 py-1 text-xs font-bold rounded-full ${bgColor}">${priority}</span>
+            </div>
+            <h3 class="mt-2 text-lg font-semibold text-gray-800">${c.title || 'Complaint'}</h3>
+            <p class="mt-1 text-sm text-gray-600">${c.description || 'No description available.'}</p>
+            <div class="mt-3 flex justify-between text-xs text-gray-500">
+              <span><i class="fas fa-calendar-alt"></i> ${createdDate}</span>
+              <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded">${c.category || 'General'}</span>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    document.getElementById('phoneNumber').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 0 && !value.startsWith('91')) {
+        if (value.length === 10) value = '91' + value;
+      }
+      e.target.value = '+' + value;
+    });
+  </script>
+</body>
+</html>

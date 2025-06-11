@@ -1,11 +1,6 @@
 import random
 import requests
-from flask import Flask, request, jsonify, session
-from flask_cors import CORS
-
-app = Flask(__name__)
-app.secret_key = "civil_chatbot_secret"
-CORS(app, supports_credentials=True)
+from flask import request, jsonify, session
 
 # Define possible responses for each intent
 RESPONSES = {
@@ -482,13 +477,14 @@ def get_option_mode_response(last_option):
     # Fix: Normalize quotes for matching (handles curly/smart quotes vs straight quotes)
     def normalize_quotes(s):
         return s.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"').replace("`", "'").strip().lower()
-    norm_last_option = normalize_quotes(last_option)
+    norm_last_option = normalize_quotes(last_option)    
     for key in CUSTOM_ANSWERS:
         if normalize_quotes(key) == norm_last_option:
             answer = random.choice(CUSTOM_ANSWERS[key])
             followup = "\n\nDo you need to ask something else?"
-            return {"reply": answer + followup, "options": []}
-    return {"reply": "Sorry, I don't have an answer for that question yet.\n\nDo you need to ask something else?", "options": []}
+            # Return the main categories after providing an answer
+            return {"reply": answer + followup, "options": RESPONSES["civil_problem_intro"][0]["options"]}
+    return {"reply": "Sorry, I don't have an answer for that question yet.\n\nDo you need to ask something else?", "options": RESPONSES["civil_problem_intro"][0]["options"]}
 
 def get_bot_response(message):
     msg = message.lower()
@@ -522,19 +518,15 @@ def get_bot_response(message):
     # Remove Gemini fallback, use only default message
     return {"reply": "Sorry, I don't have an answer for that question yet.", "options": []}
 
-@app.route('/api/chat', methods=['POST'])
-def chat():
-    data = request.get_json()
+# Function to be called from web_routes.py
+def handle_chat_request(data):
     user_message = data.get('message', '')
     option_mode = data.get('option_mode', False)
     last_option = data.get('last_option', None)
     if option_mode:
         # Always use user_message as last_option, unless it's empty
         response = get_option_mode_response(user_message)
-        return jsonify(response)
+        return response
     else:
         bot_reply = get_bot_response(user_message)
-        return jsonify(bot_reply)
-
-if __name__ == '__main__':
-    app.run(port=5000)
+        return bot_reply

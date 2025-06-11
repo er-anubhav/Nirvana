@@ -27,8 +27,270 @@
     .animate-fade-in {
       animation: fade-in 0.5s ease-out;
     }
-    .modal {
-      transition: opacity 0.25s ease;
+    /* Delete old chat bubble styling and replace with new chatbot styles */
+    /* Chatbot styles from chatbot_frontend.html */
+    #chatbot-circle {
+        position: fixed;
+        bottom: 32px;
+        right: 32px;
+        width: 64px;
+        height: 64px;
+        background: #1976d2;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px #888;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 1001;
+        transition: box-shadow 0.2s;
+    }
+    #chatbot-circle:hover {
+        box-shadow: 0 4px 16px #1976d2;
+    }
+    #chatbot-circle-icon {
+        color: #fff;
+        font-size: 32px;
+        user-select: none;
+    }
+    #chatbot-popup {
+        position: fixed;
+        bottom: 110px;
+        right: 32px;
+        width: 420px;
+        max-width: 98vw;
+        height: 560px;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px #888;
+        display: none;
+        flex-direction: column;
+        z-index: 1002;
+        overflow: hidden;
+        animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95);}
+        to { opacity: 1; transform: scale(1);}
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; transform: scale(1);}
+        to { opacity: 0; transform: scale(0.95);}
+    }
+    #chatbot-popup.fade-out {
+        animation: fadeOut 0.2s forwards;
+    }
+    #chatbot-header {
+        background: #1976d2;
+        color: #fff;
+        padding: 14px 18px;
+        font-size: 18px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    #chatbot-close {
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 22px;
+        cursor: pointer;
+    }
+    #chatbox {
+        flex: 1;
+        width: 100%;
+        height: 400px;
+        border: none;
+        padding: 12px;
+        overflow-y: auto;
+        background: #fafbfc;
+        font-size: 15px;
+        word-break: break-word;
+        white-space: pre-line;
+        box-sizing: border-box;
+    }
+    #inputRow {
+        display: flex;
+        gap: 8px;
+        padding: 10px;
+        border-top: 1px solid #eee;
+        background: #f4f6fb;
+    }
+    #userInput {
+        width: 70%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    #sendBtn {
+        width: 20%;
+        padding: 8px;
+        border-radius: 4px;
+        border: none;
+        background: #1976d2;
+        color: #fff;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    #sendBtn:hover {
+        background: #1565c0;
+    }
+    .typing-indicator-dots {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        height: 12px;
+        width: 28px;
+        margin-right: 8px;
+    }
+    .typing-indicator-dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        margin: 0 2px;
+        background: #1976d2;
+        border-radius: 50%;
+        opacity: 0.5;
+        animation: typing-bounce 1s infinite both;
+    }
+    .typing-indicator-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing-bounce {
+        0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+        40% { transform: scale(1); opacity: 1; }
+    }
+    .fade-in-option {
+        opacity: 0;
+        animation: fadeInOption 0.5s forwards;
+    }
+    @keyframes fadeInOption {
+        to { opacity: 1; }
+    }
+    .chat-row {
+        display: flex;
+        align-items: flex-end;
+        margin-bottom: 8px;
+    }
+    .chat-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #1976d2;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        font-weight: 600;
+        margin-right: 10px;
+        flex-shrink: 0;
+        box-shadow: 0 2px 6px #e3eafc;
+        letter-spacing: 0.5px;
+    }
+    .chat-avatar.user {
+        background: #388e3c;
+        margin-left: 10px;
+        margin-right: 0;
+        order: 2;
+        box-shadow: 0 2px 6px #e6f4ea;
+    }
+    .chat-bubble {
+        max-width: 75%;
+        padding: 9px 14px;
+        border-radius: 16px;
+        font-size: 15px;
+        word-break: break-word;
+        white-space: pre-line;
+        border: 1px solid #e3eafc;
+        transition: background 0.2s;
+        margin-left: 0;
+        margin-right: 8px;
+        background: #f7fafd;
+        color: #1976d2;
+        box-shadow: none;
+        text-align: left;
+    }
+    .chat-row.user {
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+    .chat-row.user .chat-bubble {
+        background: #f3f9f5;
+        color: #388e3c;
+        margin-left: auto;
+        margin-right: 8px;
+        border: 1px solid #e6f4ea;
+        box-shadow: none;
+        text-align: right;
+    }
+    .option-btn {
+        display: inline-block;
+        margin: 6px 6px 0 0;
+        padding: 7px 16px;
+        background: #e3eafc;
+        color: #1976d2;
+        border: 1px solid #1976d2;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 15px;
+        transition: background 0.2s;
+    }
+    .option-btn:hover {
+        background: #1976d2;
+        color: #fff;
+    }
+    #chatbot-message-cloud {
+        position: fixed;
+        bottom: 110px;
+        right: 110px;
+        background: #f7fafd;
+        color: #1976d2;
+        border-radius: 10px;
+        box-shadow: 0 1px 4px #e3eafc;
+        padding: 10px 22px;
+        font-size: 18px;
+        font-weight: 400;
+        z-index: 1001;
+        display: block;
+        transition: opacity 0.2s, visibility 0.2s;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: none;
+    }
+    #chatbot-message-cloud::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        right: 18px;
+        border-width: 6px 6px 0 6px;
+        border-style: solid;
+        border-color: #f7fafd transparent transparent transparent;
+        filter: drop-shadow(0 1px 1px #e3eafc);
+    }
+    #chatbot-message-cloud.hide {
+        opacity: 0;
+        visibility: hidden;
+    }
+    /* WhatsApp image button style */
+    .whatsapp-img-btn {
+      position: fixed;
+      bottom: 32px;
+      left: 32px;
+      width: 64px;
+      height: 64px;
+      cursor: pointer;
+      z-index: 1001;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px #888;
+      transition: box-shadow 0.2s;
+      background: transparent;
+      padding: 0;
+      border: none;
+    }
+    .whatsapp-img-btn:hover {
+      box-shadow: 0 4px 16px #25d366;
     }
   </style>
 </head>
@@ -71,8 +333,36 @@
       </div>
 
       <div id="complaintsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-    </section>
-  </main>
+    </section>  </main>
+
+  <!-- WhatsApp Circle Button -->
+  <button class="whatsapp-img-btn" id="whatsapp-img-btn" title="Chat on WhatsApp">
+    <img src="/static/images/whatsapp.png" alt="WhatsApp" width="64" height="64" />
+  </button>
+
+  <!-- Replace the floating chatbot button with new style -->
+  <!-- Message Cloud near Chatbot Circle -->
+  <div id="chatbot-message-cloud">hello how can i help you</div>
+  
+  <!-- Chatbot Circle Button -->
+  <div id="chatbot-circle">
+    <span id="chatbot-circle-icon">&#128172;</span>
+  </div>
+
+  <!-- Chatbot Popup Window -->
+  <div id="chatbot-popup">
+    <div id="chatbot-header">
+      Nirvana Civil Assistance
+      <button id="chatbot-close" title="Close">&times;</button>
+    </div>
+    <div id="container">
+      <div id="chatbox"></div>
+      <div id="inputRow" style="display:flex; gap:8px;">
+        <input type="text" id="userInput" placeholder="Type your message..." autocomplete="off" />
+        <button id="sendBtn">Send</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     document.getElementById('searchForm').addEventListener('submit', async function(e) {
@@ -177,7 +467,259 @@
         if (value.length === 10) value = '91' + value;
       }
       e.target.value = '+' + value;
+    });    // Replace all chatbot functionality with new implementation
+    let optionMode = false;
+    let lastOption = null;
+    let optionHistory = [];
+    let awaitingAnythingElse = false;
+    let chatInitialized = false;
+
+    // Show/hide popup logic
+    const chatbotCircle = document.getElementById('chatbot-circle');
+    const chatbotPopup = document.getElementById('chatbot-popup');
+    const chatbotClose = document.getElementById('chatbot-close');
+    const container = document.getElementById('container');
+    const chatbotMessageCloud = document.getElementById('chatbot-message-cloud');
+
+    chatbotCircle.onclick = function() {
+      chatbotPopup.classList.remove('fade-out');
+      chatbotPopup.style.display = "flex";
+      container.style.display = "block";
+      chatbotCircle.style.display = "none";
+      chatbotMessageCloud.classList.add('hide');
+      
+      // Only load chat if first time
+      if (!chatInitialized) {
+        // Always start in option mode
+        optionMode = true;
+        lastOption = null;
+        optionHistory = [];
+        sendMessage("", true, null);
+        chatInitialized = true;
+      }
+    };
+
+    chatbotClose.onclick = function() {
+      chatbotPopup.classList.add('fade-out');
+      setTimeout(() => {
+        chatbotPopup.style.display = "none";
+        container.style.display = "none";
+        chatbotCircle.style.display = "flex";
+        chatbotMessageCloud.classList.remove('hide');
+        chatbotPopup.classList.remove('fade-out');
+      }, 200);
+    };
+
+    function appendMessage(sender, text, callbackAfterTyping) {
+      const chatbox = document.getElementById('chatbox');
+      // Create chat row
+      const row = document.createElement('div');
+      row.className = 'chat-row' + (sender === 'user' ? ' user' : '');
+      // Avatar
+      const avatar = document.createElement('div');
+      avatar.className = 'chat-avatar' + (sender === 'user' ? ' user' : '');
+      avatar.textContent = sender === 'user' ? 'U' : 'A';
+      // Bubble
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble';
+      if (sender === 'bot') {
+        bubble.innerHTML = `
+          <span class="thinking-indicator" style="display:inline;">
+            <span class="typing-indicator-dots">
+              <span class="typing-indicator-dot"></span>
+              <span class="typing-indicator-dot"></span>
+              <span class="typing-indicator-dot"></span>
+            </span>
+          </span>
+          <span class="typing-indicator" style="display:none;">
+            <span class="typing-indicator-dots">
+              <span class="typing-indicator-dot"></span>
+              <span class="typing-indicator-dot"></span>
+              <span class="typing-indicator-dot"></span>
+            </span>
+          </span>
+          <span class="bot-text"></span>
+        `;
+      } else {
+        bubble.textContent = text;
+      }
+      // Assemble
+      if (sender === 'user') {
+        // Message bubble first, then avatar (avatar on right)
+        row.appendChild(bubble);
+        row.appendChild(avatar);
+      } else {
+        row.appendChild(avatar);
+        row.appendChild(bubble);
+      }
+      chatbox.appendChild(row);
+      chatbox.scrollTop = chatbox.scrollHeight;
+      if (sender === 'bot') {
+        showThinkingThenTypingEffect(bubble, text, callbackAfterTyping);
+      }
+    }
+
+    function showThinkingThenTypingEffect(bubble, text, callbackAfterTyping) {
+      const thinkingSpan = bubble.querySelector('.thinking-indicator');
+      const typingSpans = bubble.querySelectorAll('.typing-indicator');
+      const typingSpan = typingSpans.length > 1 ? typingSpans[1] : null;
+      const botTextSpan = bubble.querySelector('.bot-text');
+      thinkingSpan.style.display = 'inline';
+      if (typingSpan) typingSpan.style.display = 'none';
+      botTextSpan.textContent = '';
+      setTimeout(() => {
+        thinkingSpan.style.display = 'none';
+        if (typingSpan) typingSpan.style.display = 'inline';
+        let i = 0;
+        function typeChar() {
+          if (i < text.length) {
+            botTextSpan.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeChar, 18 + Math.random() * 30);
+          } else {
+            if (typingSpan) typingSpan.style.display = 'none';
+            if (typeof callbackAfterTyping === "function") callbackAfterTyping();
+          }
+        }
+        typeChar();
+      }, 400 + Math.random() * 300);
+    }
+
+    function appendOptions(options, showBack = false) {
+      const chatbox = document.getElementById('chatbox');
+      // Remove previous option buttons
+      const oldOptions = chatbox.querySelectorAll('.bot-options');
+      oldOptions.forEach(el => el.remove());
+      if (!options || !options.length) return;
+      const optionsDiv = document.createElement('div');
+      optionsDiv.className = 'bot bot-options';
+      let delay = 0;
+      if (showBack) {
+        const backBtn = document.createElement('button');
+        backBtn.className = 'option-btn fade-in-option';
+        backBtn.textContent = "⬅️ Back";
+        backBtn.style.animationDelay = `${delay}s`;
+        backBtn.onclick = () => {
+          if (optionHistory.length > 0) {
+            const prev = optionHistory.pop();
+            lastOption = prev.lastOption;
+            sendMessage(prev.message, true, prev.lastOption, true);
+          } else {
+            lastOption = null;
+            sendMessage("", true, null, false);
+          }
+        };
+        optionsDiv.appendChild(backBtn);
+        delay += 0.07;
+      }
+      options.forEach((option, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn fade-in-option';
+        btn.textContent = option;
+        btn.style.animationDelay = `${delay + idx * 0.07}s`;
+        btn.onclick = () => {
+          appendMessage('user', option);
+          if (option !== "Other" && lastOption !== null) {
+            optionHistory.push({ message: lastOption, lastOption: lastOption });
+          }
+          lastOption = option;
+          if (option === "Other") {
+            document.getElementById('inputRow').style.display = "flex";
+            document.getElementById('userInput').focus();
+          } else {
+            document.getElementById('inputRow').style.display = "none";
+            sendMessage(option, true, option);
+          }
+        };
+        optionsDiv.appendChild(btn);
+      });
+      chatbox.appendChild(optionsDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    async function sendMessage(message, isOptionMode = optionMode, optionValue = null, isBack = false) {
+      const userInput = document.getElementById('userInput');
+      userInput.value = '';
+      // If user is replying to "Do you need to ask something else?", show options again
+      if (awaitingAnythingElse && message.trim() !== "") {
+        awaitingAnythingElse = false;
+        lastOption = null;
+        optionHistory = [];
+        appendMessage('bot', "Please select a category for your query:", function() {
+          // Fetch options from backend (simulate root options)
+          fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: "",
+              option_mode: true,
+              last_option: null
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            setTimeout(() => appendOptions(data.options, false), 100);
+          });
+        });
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message,
+            option_mode: isOptionMode,
+            last_option: optionValue
+          })
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
+        console.log("Chatbot response:", data);
+        
+        // Display bot response
+        if (data.reply) {
+          appendMessage('bot', data.reply, function() {
+            if (data.reply && data.reply.toLowerCase().includes("do you need to ask something else")) {
+              awaitingAnythingElse = true;
+              document.getElementById('inputRow').style.display = "flex";
+              document.getElementById('userInput').focus();
+              appendOptions([], false); // Remove options
+            } else {
+              const isRoot = (optionHistory.length === 0 && (lastOption === null || lastOption === undefined));
+              appendOptions(data.options, !isRoot && data.options && data.options.length > 0);
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        appendMessage('bot', 'Sorry, there was an error processing your request. Please try again later.');
+      }
+    }
+
+    document.getElementById('sendBtn').onclick = function() {
+      const userInput = document.getElementById('userInput');
+      if (optionMode && lastOption !== "Other" && !awaitingAnythingElse) return;
+      const message = userInput.value.trim();
+      if (!message) return;
+      appendMessage('user', message);
+      sendMessage(message, optionMode, message);
+      userInput.value = '';
+      if (optionMode && !awaitingAnythingElse) document.getElementById('inputRow').style.display = "none";
+    };
+
+    document.getElementById('userInput').addEventListener('keydown', function(e) {
+      if (optionMode && lastOption !== "Other" && !awaitingAnythingElse) return;
+      if (e.key === 'Enter') document.getElementById('sendBtn').click();
     });
+
+    // WhatsApp circle click handler
+    document.getElementById('whatsapp-img-btn').onclick = function() {
+      window.open('https://wa.me/15551919995', '_blank');
+    };
   </script>
 </body>
 </html>

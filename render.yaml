@@ -3,7 +3,7 @@ services:
     name: nirvan-app
     env: python
     buildCommand: |
-      pip install -r requirements_sounddevice.txt
+      pip install -r requirements.txt
     startCommand: python app.py
     envVars:
       - key: PYTHON_VERSION

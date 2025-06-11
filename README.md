@@ -83,6 +83,39 @@ But deployment requires **deeper infrastructure understanding** due to high-perf
 
 ---
 
-## 🤝 Contributions Welcome
+## 🧹 Key Features Summary
 
-If you have experience deploying AI pipelines with custom models or working with GPU servers, we’d love your input! Feel free to open an issue or submit a pull request.
+* 🤖 **AI/ML Complaint Management**
+* 🗺️ **Geo-tagged Reporting**
+* 📊 **Real-time Dashboards**
+* 🗣️ **Multilingual & Inclusive**
+* 🔐 **Transparent & Auditable**
+* 📱 **WhatsApp-Based Citizen Interface** ✅
+* 🌐 **Modular Architecture**
+
+---
+
+## 🌐 System Architecture Overview
+
+```
+Citizen (via WhatsApp)
+     ↓
+WhatsApp Business API (Webhook → Flask)
+     ↓
+Nirvana Bot (Flask + Python + ML models)
+     ↓
+Supabase (Database + Auth + Real-time Sync)
+     ↓
+Admin Dashboard (React + Vite + Tailwind)
+```
+
+* **Frontend:** Admin dashboard for officials to view, filter, and act on complaints
+* **Backend:** Python Flask app with real-time webhook handling for WhatsApp messages
+* **ML Models:** Categorization, prioritization, sentiment analysis
+* **Storage & Sync:** Supabase for structured complaint logs and real-time updates
+* **Location & Media:** Image + GPS capture directly via WhatsApp
+* **Deployment:** Modular microservices for scalability
+
+---
+
+The WhatsApp chatbot isn’t just a feature—**it’s a foundational pillar of Nirvana’s mission** to democratize access to responsive governance, remove barriers to participation, and ensure every voice is heard and logged in real-time.

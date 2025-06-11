@@ -10,7 +10,7 @@ from services.db_service import (
     add_comment_to_complaint
 )
 from models.llm_model import analyze_complaint_text, get_llm_response, validate_location_format, validate_image_text_consistency, enhance_complaint_details
-from services.voice_service import voice_service
+from services.voice_service_sounddevice import voice_service
 
 # States for complaint workflow
 STATES = {

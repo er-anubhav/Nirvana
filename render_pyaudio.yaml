@@ -3,7 +3,9 @@ services:
     name: nirvan-app
     env: python
     buildCommand: |
-      pip install -r requirements_sounddevice.txt
+      apt-get update
+      apt-get install -y portaudio19-dev python3-pyaudio libasound2-dev
+      pip install -r requirements.txt
     startCommand: python app.py
     envVars:
       - key: PYTHON_VERSION

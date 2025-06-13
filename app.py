@@ -10,7 +10,6 @@ from config import (
 from models.yolo_model import model_loaded, yolo_model
 
 from routes.webhook_routes import register_webhook_routes
-from routes.test_routes import register_test_routes
 from routes.web_routes import web_bp
 
 def create_app():
@@ -30,7 +29,6 @@ def create_app():
         return response
     
     register_webhook_routes(app)
-    register_test_routes(app)
     app.register_blueprint(web_bp)
     
     return app

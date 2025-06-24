@@ -211,3 +211,36 @@ def chat():
     except Exception as e:
         logger.error(f"Error processing chat request: {e}")
         return jsonify({'reply': 'Sorry, I encountered an error. Please try again later.', 'options': []}), 500
+
+@web_bp.route('/debug', methods=['GET', 'POST', 'HEAD'])
+def debug_endpoint():
+    """Debug endpoint to troubleshoot webhook issues"""
+    method = request.method
+    headers = dict(request.headers)
+    content_type = request.headers.get('Content-Type', '')
+    
+    response_data = {
+        'method': method,
+        'headers': headers,
+        'content_type': content_type,
+    }
+    
+    if method == 'POST':
+        if 'application/json' in content_type:
+            try:
+                data = request.json
+                response_data['json_data'] = data
+            except:
+                response_data['json_error'] = 'Could not parse JSON data'
+        
+        if request.form:
+            response_data['form_data'] = dict(request.form)
+            
+        if request.data:
+            try:
+                response_data['raw_data'] = request.data.decode('utf-8', errors='ignore')
+            except:
+                response_data['raw_data_error'] = 'Could not decode raw data'
+    
+    logger.info(f"Debug endpoint called: {response_data}")
+    return jsonify(response_data)

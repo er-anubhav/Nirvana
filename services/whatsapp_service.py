@@ -11,8 +11,6 @@ from services.db_service import (
 )
 from models.llm_model import analyze_complaint_text, get_llm_response, validate_location_format, validate_image_text_consistency, enhance_complaint_details
 from services.voice_service_tts import voice_service
-
-# States for complaint workflow
 STATES = {
     'INIT': 'init',
     'DESCRIPTION': 'description',

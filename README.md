@@ -4,6 +4,8 @@
 
 ✅ **Development Completed**  
 ⚠️ **Deployment Pending**
+
+
 Video : https://drive.google.com/file/d/1Zgp0bnVl_ZpUCjAj_NZR2G1of5MOZWn8/view?usp=drive_link
 
 The Nirvana project has reached a significant milestone: **core development is complete**. However, due to the complex architecture and advanced AI integrations, we currently **cannot deploy it on standard cloud platforms** without further research and optimization.

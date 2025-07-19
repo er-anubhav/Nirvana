@@ -76,7 +76,7 @@ But deployment requires **deeper infrastructure understanding** due to high-perf
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: HTML + TailwindCSS
+- **Frontend**: NextJS + Tailwind
 - **Backend**: Python (Flask)
 - **Image Recognition**: YOLOv8 (custom-trained)
 - **Text Classification**: Gemini API
